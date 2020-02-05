@@ -1,4 +1,4 @@
-package pt.tiagomagalhaes.cap-photo-roll;
+package pt.tiagomagalhaes.capacitor;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
