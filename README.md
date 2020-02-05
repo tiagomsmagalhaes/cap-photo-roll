@@ -34,6 +34,7 @@ export class GalleryPage {
         const latestPhoto = await PhotoRoll.getLastPhotoTaken();
 
         this.lastPhoto = 'data:image/png;base64, ' + result.image;
+    }
 }
 
 ```
