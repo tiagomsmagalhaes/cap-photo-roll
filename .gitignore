@@ -1,0 +1,15 @@
+
+*.tmp
+*.tmp.*
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+UserInterfaceState.xcuserstate
+$RECYCLE.BIN/
+
+*.log
+log.txt
+npm-debug.log*
+
+/node_modules
