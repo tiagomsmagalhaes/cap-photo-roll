@@ -1,3 +1,4 @@
+import Capacitor
 import Photos
 
 @objc(PhotoRoll)
