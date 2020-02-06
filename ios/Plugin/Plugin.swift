@@ -3,7 +3,9 @@ import Photos
 
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
-    
+
+    lazy var imageManager = PHCachingImageManager()
+
     @objc func hasLibraryPermission(_ call: CAPPluginCall)  {
         if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized {
             call.success(["status": true])
@@ -25,9 +27,9 @@ public class PhotoRoll: CAPPlugin {
         let imageData:Data =  image.pngData()!
         let base64String = imageData.base64EncodedString()
         
-        call.success([
-            "image": base64String
-        ])  
+            call.success([
+                "image": base64String
+            ])  
         } else {
             call.error("Permission Denied")
         }
