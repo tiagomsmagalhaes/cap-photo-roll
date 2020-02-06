@@ -2,8 +2,13 @@
 
 [![npm version](https://badge.fury.io/js/cap-photo-roll.svg)](https://badge.fury.io/js/cap-photo-roll)
 
-A Capacitor API for retrieving Photos from your device Camera Roll. A work in progress.
+A Capacitor API for retrieving Photos from your device Camera Roll.
 
+It's a Work in Progress. It's published so I thought it would be easier for me to test it. After 0.1.1, I'll branch out to development  and publish it more sparsely after remembering that I could install from the repo.
+
+As of 0.1.1, it fetches after second opening of the app the most recent photo on iOS and an encoded image on Android.
+
+Android X support may come after Capacitor 2.0.0 is released.
 
 
 ## Installation
