@@ -1,6 +1,6 @@
 {
   "name": "cap-photo-roll",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Photo Roll API",
   "main": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
