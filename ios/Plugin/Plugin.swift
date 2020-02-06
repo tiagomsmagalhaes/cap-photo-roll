@@ -16,6 +16,23 @@ public class PhotoRoll: CAPPlugin {
 
     @objc func getLastPhotoTaken(_ call: CAPPluginCall) {
         
+        let status = PHPhotoLibrary.authorizationStatus()
+        switch status {
+        case .authorized:
+            print("autorizado")
+        case .restricted:
+            print("restrito")
+        case .denied:
+            print("rejeitado")
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({(status: PHAuthorizationStatus) in
+                if (status == PHAuthorizationStatus.authorized) {
+                    print("agora autorizado")
+                } else {
+                    print("agora outra coisa")
+                }
+            })
+        }
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchOptions.fetchLimit = 1
