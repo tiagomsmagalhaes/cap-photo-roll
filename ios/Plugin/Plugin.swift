@@ -10,17 +10,10 @@ public class PhotoRoll: CAPPlugin {
         let status = PHPhotoLibrary.authorizationStatus()
 
         switch status {
-        case .authorized:
-            print("autorizado")
-            call.success(["status": true])
-        case .restricted:
-            print("restrito")
-            call.error("nao tem permisao")
-        case .denied:
-            print("rejeitado")
-            call.error("rejeitado")
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization({(status: PHAuthorizationStatus) in
+            case .authorized:   call.success(["status": true])
+            case .restricted:   call.error("Restricted")
+            case .denied:       call.error("REJECTED")
+            case .notDetermined: PHPhotoLibrary.requestAuthorization({(status: PHAuthorizationStatus) in
                 if (status == PHAuthorizationStatus.authorized) {
                     print("agora autorizado")
                     call.success(["status": true])
@@ -33,24 +26,6 @@ public class PhotoRoll: CAPPlugin {
     }
 
     @objc func getLastPhotoTaken(_ call: CAPPluginCall) {
-        
-        let status = PHPhotoLibrary.authorizationStatus()
-        switch status {
-        case .authorized:
-            print("autorizado")
-        case .restricted:
-            print("restrito")
-        case .denied:
-            print("rejeitado")
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization({(status: PHAuthorizationStatus) in
-                if (status == PHAuthorizationStatus.authorized) {
-                    print("agora autorizado")
-                } else {
-                    print("agora outra coisa")
-                }
-            })
-        }
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchOptions.fetchLimit = 1
