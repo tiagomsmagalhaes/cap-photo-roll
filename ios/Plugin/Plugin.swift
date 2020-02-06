@@ -19,13 +19,18 @@ public class PhotoRoll: CAPPlugin {
         fetchOptions.fetchLimit = 1
         
         let fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
+
+        if fetchResult.count > 0 {
         let image = getAssetThumbnail(asset: fetchResult.object(at: 0))
         let imageData:Data =  image.pngData()!
         let base64String = imageData.base64EncodedString()
         
         call.success([
             "image": base64String
-        ])
+        ])  
+        } else {
+            call.error("Permission Denied")
+        }
         
     }
     
