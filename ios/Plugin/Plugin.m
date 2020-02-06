@@ -4,5 +4,6 @@
 // Define the plugin using the CAP_PLUGIN Macro, and
 // each method the plugin supports using the CAP_PLUGIN_METHOD macro.
 CAP_PLUGIN(PhotoRoll, "PhotoRoll",
-           CAP_PLUGIN_METHOD(getLastPhotoTaken, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(hasLibraryPermission,  CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getLastPhotoTaken,     CAPPluginReturnPromise);
 )

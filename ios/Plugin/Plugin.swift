@@ -4,11 +4,12 @@ import Photos
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
     
-    @objc func echo(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        call.success([
-            "value": value
-        ])
+    @objc func hasLibraryPermission(_ call: CAPPluginCall)  {
+        if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized {
+            call.success(["status": true])
+        } else {
+            call.success(["status": false])
+        }
     }
 
     @objc func getLastPhotoTaken(_ call: CAPPluginCall) {
@@ -24,7 +25,7 @@ public class PhotoRoll: CAPPlugin {
         
         call.success([
             "image": base64String
-            ])
+        ])
         
     }
     
