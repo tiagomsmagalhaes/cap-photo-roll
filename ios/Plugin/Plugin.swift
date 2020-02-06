@@ -7,10 +7,28 @@ public class PhotoRoll: CAPPlugin {
     lazy var imageManager = PHCachingImageManager()
 
     @objc func hasLibraryPermission(_ call: CAPPluginCall)  {
-        if PHPhotoLibrary.authorizationStatus() == PHAuthorizationStatus.authorized {
+        let status = PHPhotoLibrary.authorizationStatus()
+
+        switch status {
+        case .authorized:
+            print("autorizado")
             call.success(["status": true])
-        } else {
-            call.success(["status": false])
+        case .restricted:
+            print("restrito")
+            call.error("nao tem permisao")
+        case .denied:
+            print("rejeitado")
+            call.error("rejeitado")
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({(status: PHAuthorizationStatus) in
+                if (status == PHAuthorizationStatus.authorized) {
+                    print("agora autorizado")
+                    call.success(["status": true])
+                } else {
+                    print("agora outra coisa")
+                    call.success(["status": true])
+                }
+            })
         }
     }
 
@@ -45,6 +63,7 @@ public class PhotoRoll: CAPPlugin {
         let base64String = imageData.base64EncodedString()
         
             call.success([
+                "status": true,
                 "image": base64String
             ])  
         } else {
