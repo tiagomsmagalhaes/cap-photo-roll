@@ -46,26 +46,29 @@ public class PhotoRoll: CAPPlugin {
         let fetchOptions = PHFetchOptions()
         fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchOptions.fetchLimit = 1
-        
+
         let fetchResult = PHAsset.fetchAssets(with: .image, options: fetchOptions)
 
         if fetchResult.count > 0 {
-        let image = getAssetThumbnail(asset: fetchResult.object(at: 0))
-        let imageData:Data =  image.pngData()!
-        let base64String = imageData.base64EncodedString()
-        
+            let image = getAssetThumbnail(asset: fetchResult.object(at: 0))
+            let imageData:Data = image.pngData()!
+            let base64String = imageData.base64EncodedString()
+
             call.success([
                 "status": true,
                 "image": base64String
-            ])  
+            ])
         } else {
             call.error("Permission Denied")
         }
     }
-    
+
+
     @objc func getPhotos(_ call: CAPPluginCall) {
         self.fetchResultAssetsToJs(call)
     }
+
+    // Private functions
 
     func getAssetThumbnail(asset: PHAsset) -> UIImage {
         
@@ -81,19 +84,41 @@ public class PhotoRoll: CAPPlugin {
         
         return thumbnail
     }
-    
-    
+
     func fetchResultAssetsToJs(_ call: CAPPluginCall) {
-        var assets: [Encodable] = []
+        var assets: [JSObject] = []
         
-        let quantity = call.getInt("quantity", PhotoRoll.DEFAULT_QUANTITY)!
+        let albumId = call.getString("albumIdentifier")
+        
+        let quantity = call.getInt("quantity", MediaPlugin.DEFAULT_QUANTITY)!
         
         var targetCollection: PHAssetCollection?
         
         let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        options.fetchLimit = quantity
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         
-        let fetchResult = PHAsset.fetchAssets(with: options)
+        if albumId != nil {
+            let albumFetchResult = PHAssetCollection.fetchAssetCollections(withLocalIdentifiers: [albumId!], options: nil)
+            albumFetchResult.enumerateObjects({ (collection, count, _) in
+                targetCollection = collection
+            })
+        }
+        
+        var fetchResult: PHFetchResult<PHAsset>;
+        if targetCollection != nil {
+            fetchResult = PHAsset.fetchAssets(in: targetCollection!, options: options)
+        } else {
+            fetchResult = PHAsset.fetchAssets(with: options)
+        }
+        
+        //let after = call.getString("after")
+        
+        let types = call.getString("types") ?? MediaPlugin.DEFAULT_TYPES
+        let thumbnailWidth = call.getInt("thumbnailWidth", MediaPlugin.DEFAULT_THUMBNAIL_WIDTH)!
+        let thumbnailHeight = call.getInt("thumbnailHeight", MediaPlugin.DEFAULT_THUMBNAIL_HEIGHT)!
+        let thumbnailSize = CGSize(width: thumbnailWidth, height: thumbnailHeight)
+        let thumbnailQuality = call.getInt("thumbnailQuality", 95)!
 
         let requestOptions = PHImageRequestOptions()
         requestOptions.isNetworkAccessAllowed = true
@@ -101,50 +126,42 @@ public class PhotoRoll: CAPPlugin {
         requestOptions.deliveryMode = .opportunistic
         requestOptions.isSynchronous = true
         
-        let thumbnailWidth = call.getInt("thumbnailWidth", PhotoRoll.DEFAULT_THUMBNAIL_WIDTH)!
-        let thumbnailHeight = call.getInt("thumbnailHeight", PhotoRoll.DEFAULT_THUMBNAIL_HEIGHT)!
-        let thumbnailSize = CGSize(width: thumbnailWidth, height: thumbnailHeight)
-        let thumbnailQuality = call.getInt("thumbnailQuality", 95)!
+        fetchResult.enumerateObjects({ (asset, count: Int, stop: UnsafeMutablePointer<ObjCBool>) in
 
-        
-        fetchResult.enumerateObjects { (asset, count, stop) in
-            if asset.mediaType == .video {
+            if asset.mediaType == .image && types == "videos" {
                 return
             }
-            
+            if asset.mediaType == .video && types == "photos" {
+                return
+            }
+
+            var a = JSObject()
+
             self.imageManager.requestImage(for: asset, targetSize: thumbnailSize, contentMode: .aspectFill, options: requestOptions, resultHandler: { (fetchedImage, _) in
                 guard let image = fetchedImage else {
                     return
                 }
                 
-                let identifier = asset.localIdentifier
-                let data = image.jpegData(compressionQuality: CGFloat(thumbnailQuality) / 100.0)?.base64EncodedString()
-                
-                var creationDate: String = ""
+                a["identifier"] = asset.localIdentifier
 
-                let dateFormatter = DateFormatter()
-            
-                if (asset.creationDate != nil) {
-                    creationDate = dateFormatter.string(from: (asset.creationDate ?? nil)!)
+                // TODO: We need to know original type
+                a["data"] = image.jpegData(compressionQuality: CGFloat(thumbnailQuality) / 100.0)?.base64EncodedString()
+
+                if asset.creationDate != nil {
+                    a["creationDate"] = JSDate.toString(asset.creationDate!)
                 }
-                
-                let photo = Photo(identifier: identifier, data: data!, creationDate: creationDate, fullWidth: asset.pixelWidth, fullHeight: asset.pixelHeight, thumbnailWidth: image.size.width, thumbnailHeight: image.size.height)
-                
-                let encoder = JSONEncoder()
-                
-                
-                do {
-                    let encodedPhoto = try encoder.encode(photo)
-                    assets.append(encodedPhoto)
-                } catch {
-                    print(error)
-                }
+                a["fullWidth"] = asset.pixelWidth
+                a["fullHeight"] = asset.pixelHeight
+                a["thumbnailWidth"] = image.size.width
+                a["thumbnailHeight"] = image.size.height
+                a["location"] = self.makeLocation(asset)
+
+                assets.append(a)
             })
-        }
-        
+        })
+
         call.success([
-            "status": true,
-            "photos": assets
+            "medias": assets
         ])
     }
 }
