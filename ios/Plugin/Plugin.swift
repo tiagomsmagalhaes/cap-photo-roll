@@ -4,6 +4,8 @@ import Capacitor
 
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
+    typealias JSObject = [String:Any]
+
     static let DEFAULT_QUANTITY = 25
     static let DEFAULT_TYPES = "photos"
     static let DEFAULT_THUMBNAIL_WIDTH = 256
