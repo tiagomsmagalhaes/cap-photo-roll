@@ -160,4 +160,17 @@ public class PhotoRoll: CAPPlugin {
             "medias": assets
         ])
     }
+    func makeLocation(_ asset: PHAsset) -> JSObject {
+        var loc = JSObject()
+        guard let location = asset.location else {
+            return loc
+        }
+        
+        loc["latitude"] = location.coordinate.latitude
+        loc["longitude"] = location.coordinate.longitude
+        loc["altitude"] = location.altitude
+        loc["heading"] = location.course
+        loc["speed"] = location.speed
+        return loc
+    }
 }
