@@ -12,23 +12,12 @@ public class JSDate {
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
     typealias JSObject = [String:Any]
-
     static let DEFAULT_QUANTITY = 25
     static let DEFAULT_TYPES = "photos"
     static let DEFAULT_THUMBNAIL_WIDTH = 256
     static let DEFAULT_THUMBNAIL_HEIGHT = 256
 
     lazy var imageManager = PHCachingImageManager()
-    
-    struct Photo: Codable {
-        var identifier: String
-        var data: String
-        var creationDate: String
-        var fullWidth: Int
-        var fullHeight: Int
-        var thumbnailWidth: CGFloat
-        var thumbnailHeight: CGFloat
-    }
 
     @objc func hasLibraryPermission(_ call: CAPPluginCall)  {
         let status = PHPhotoLibrary.authorizationStatus()
