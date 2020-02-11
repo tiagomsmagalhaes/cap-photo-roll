@@ -2,6 +2,13 @@ import Foundation
 import Photos
 import Capacitor
 
+public class JSDate {
+    static func toString(_ date: Date) -> String {
+        let formatter = ISO8601DateFormatter()
+        return formatter.string(from: date)
+    }
+}
+
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
     typealias JSObject = [String:Any]
