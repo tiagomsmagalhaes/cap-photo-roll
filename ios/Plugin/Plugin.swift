@@ -1,8 +1,6 @@
 import Foundation
 import Photos
 import Capacitor
-import WebKit
-
 
 @objc(PhotoRoll)
 public class PhotoRoll: CAPPlugin {
@@ -90,7 +88,7 @@ public class PhotoRoll: CAPPlugin {
         
         let albumId = call.getString("albumIdentifier")
         
-        let quantity = call.getInt("quantity", MediaPlugin.DEFAULT_QUANTITY)!
+        let quantity = call.getInt("quantity", PhotoRoll.DEFAULT_QUANTITY)!
         
         var targetCollection: PHAssetCollection?
         
@@ -114,9 +112,9 @@ public class PhotoRoll: CAPPlugin {
         
         //let after = call.getString("after")
         
-        let types = call.getString("types") ?? MediaPlugin.DEFAULT_TYPES
-        let thumbnailWidth = call.getInt("thumbnailWidth", MediaPlugin.DEFAULT_THUMBNAIL_WIDTH)!
-        let thumbnailHeight = call.getInt("thumbnailHeight", MediaPlugin.DEFAULT_THUMBNAIL_HEIGHT)!
+        let types = call.getString("types") ?? PhotoRoll.DEFAULT_TYPES
+        let thumbnailWidth = call.getInt("thumbnailWidth", PhotoRoll.DEFAULT_THUMBNAIL_WIDTH)!
+        let thumbnailHeight = call.getInt("thumbnailHeight", PhotoRoll.DEFAULT_THUMBNAIL_HEIGHT)!
         let thumbnailSize = CGSize(width: thumbnailWidth, height: thumbnailHeight)
         let thumbnailQuality = call.getInt("thumbnailQuality", 95)!
 
